@@ -1,0 +1,18 @@
+server:
+  port: 8888
+  context-path: /
+spring:
+  http:
+    encoding:
+      charset: UTF-8
+  
+logging:
+  file: D:/temp/log/log.log
+
+
+
+
+
+
+
+debug: true
