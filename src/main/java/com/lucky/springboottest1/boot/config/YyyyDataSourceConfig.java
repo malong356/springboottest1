@@ -1,41 +1,48 @@
-/*package com.lucky.springboottest1.boot.config;
+package com.lucky.springboottest1.boot.config;
 
 import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.support.http.StatViewServlet;
 import com.alibaba.druid.support.http.WebStatFilter;
 
-
 @Configuration
-//@ImportResource(locations={"classpath:config/config.properties"})
+@MapperScan(basePackages = YyyyDataSourceConfig.PACKAGE, sqlSessionFactoryRef = "yyyySqlSessionFactory")
 @PropertySource(value={"classpath:config/config.properties"})
-public class DruidZzzzConfig {
+public class YyyyDataSourceConfig {
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	
-    @Value("${spring.datasource.url}")
+	// 精确到 yyyy 目录，以便跟其他数据源隔离
+    static final String PACKAGE = "com.lucky.springboottest1.api.mapper.yyyy";
+    static final String MAPPER_LOCATION = "classpath:com/lucky/springboottest1/api/mapper/yyyy/*.xml";
+    
+    @Value("${yyyy.url}")
     private String dbUrl;
     
-    @Value("${spring.datasource.username}")
+    @Value("${yyyy.username}")
     private String username;
     
-    @Value("${spring.datasource.password}")
+    @Value("${yyyy.password}")
     private String password;
     
-    @Value("${spring.datasource.driver-class-name}")
+    @Value("${yyyy.driver-class-name}")
     private String driverClassName;
     
     @Value("${spring.datasource.initialSize}")
@@ -95,9 +102,9 @@ public class DruidZzzzConfig {
         return filterRegistrationBean;
     }
 	
-    @Bean(name="dataSourceZzzz")
+    @Bean(name="yyyyDataSource")
     @Primary
-    public DataSource druidDataSource(){  
+    public DataSource yyyyDataSource(){  
         DruidDataSource datasource = new DruidDataSource();  
           
         datasource.setUrl(this.dbUrl);  
@@ -122,6 +129,20 @@ public class DruidZzzzConfig {
         }  
         return datasource;  
     }
-	
+    @Bean(name = "yyyyTransactionManager")
+    @Primary
+    public DataSourceTransactionManager yyyyTransactionManager() {
+        return new DataSourceTransactionManager(yyyyDataSource());
+    }
+ 
+    @Bean(name = "yyyySqlSessionFactory")
+    @Primary
+    public SqlSessionFactory yyyySqlSessionFactory(@Qualifier("yyyyDataSource") DataSource masterDataSource)
+            throws Exception {
+        final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
+        sessionFactory.setDataSource(masterDataSource);
+        sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
+                .getResources(YyyyDataSourceConfig.MAPPER_LOCATION));
+        return sessionFactory.getObject();
+    }
 }
-*/

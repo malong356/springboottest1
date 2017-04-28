@@ -11,7 +11,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 @SpringBootApplication(scanBasePackages = "com.lucky.springboottest1")
-@MapperScan(value={"com.lucky.springboottest1.api.mapper.zzzz"})
+//@MapperScan(value={"com.lucky.springboottest1.api.mapper.zzzz"})
 public class Application extends SpringBootServletInitializer{
 	@Override
 	protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {

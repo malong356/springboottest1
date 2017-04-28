@@ -1,6 +1,7 @@
 package com.lucky.springboottest1.api.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,7 +17,11 @@ public class ContactController {
 	@Autowired
 	private ContactService contactService;
 	@RequestMapping(value = "/selectAll")
-	public List<Contact> selectAll(String name){
+	public List<Contact> selectAll(){
 		return contactService.selectAll();
+	}
+	@RequestMapping(value = "/twoDb")
+	public Map<String, Object> twoDb(){
+		return contactService.twoDb();
 	}
 }
