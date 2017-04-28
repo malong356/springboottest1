@@ -1,4 +1,4 @@
-package com.lucky.springboottest1.bean;
+package com.lucky.springboottest1.api.domain;
 
 public class Person {
 	private String name;

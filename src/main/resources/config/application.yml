@@ -1,15 +1,22 @@
 server:
   port: 8888
   context-path: /
+  
 spring:
   http:
     encoding:
       charset: UTF-8
-  
+
+mybatis:  
+    typeAliasesPackage: com.lucky.**.model  
+    mapperLocations: classpath:/com/lucky/**/mapper/*.xml  
+    configLocation: classpath:config/mybatis-config.xml
+    
 logging:
   file: D:/temp/log/log.log
 
-
+#encrypt:
+#  file: file:config/config.properties
 
 
 

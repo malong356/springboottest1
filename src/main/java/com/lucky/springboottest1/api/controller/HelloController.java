@@ -1,4 +1,4 @@
-package com.lucky.springboottest1.controller;
+package com.lucky.springboottest1.api.controller;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
