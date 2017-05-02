@@ -24,4 +24,5 @@ public class ContactController {
 	public Map<String, Object> twoDb(){
 		return contactService.twoDb();
 	}
+	
 }
