@@ -45,39 +45,6 @@ public class YyyyDataSourceConfig {
     @Value("${yyyy.driver-class-name}")
     private String driverClassName;
     
-    @Value("${spring.datasource.initialSize}")
-    private int initialSize;
-    
-    @Value("${spring.datasource.minIdle}")
-    private int minIdle;
-    
-    @Value("${spring.datasource.maxActive}")
-    private int maxActive;
-    
-    @Value("${spring.datasource.maxWait}")
-    private int maxWait;
-    
-    @Value("${spring.datasource.timeBetweenEvictionRunsMillis}")
-    private int timeBetweenEvictionRunsMillis;
-    
-    @Value("${spring.datasource.minEvictableIdleTimeMillis}")
-    private int minEvictableIdleTimeMillis;
-    
-    @Value("${spring.datasource.validationQuery}")
-    private String validationQuery;
-    
-    @Value("${spring.datasource.testWhileIdle}")
-    private boolean testWhileIdle;
-    
-    @Value("${spring.datasource.testOnBorrow}")
-    private boolean testOnBorrow;
-    
-    @Value("${spring.datasource.testOnReturn}")
-    private boolean testOnReturn;
-    
-    @Value("${spring.datasource.poolPreparedStatements}")
-    private boolean poolPreparedStatements;
-    
     @Value("${spring.datasource.filters}")
     private String filters;
     
@@ -102,8 +69,8 @@ public class YyyyDataSourceConfig {
         return filterRegistrationBean;
     }
 	
-    @Bean(name="yyyyDataSource")
     @Primary
+    @Bean(name="yyyyDataSource")
     public DataSource yyyyDataSource(){  
         DruidDataSource datasource = new DruidDataSource();  
           
@@ -111,17 +78,17 @@ public class YyyyDataSourceConfig {
         datasource.setUsername(username);  
         datasource.setPassword(password);  
         datasource.setDriverClassName(driverClassName);  
-        datasource.setInitialSize(initialSize);  
-        datasource.setMinIdle(minIdle);  
-        datasource.setMaxActive(maxActive);  
-        datasource.setMaxWait(maxWait);  
-        datasource.setTimeBetweenEvictionRunsMillis(timeBetweenEvictionRunsMillis);  
-        datasource.setMinEvictableIdleTimeMillis(minEvictableIdleTimeMillis);  
-        datasource.setValidationQuery(validationQuery);  
-        datasource.setTestWhileIdle(testWhileIdle);  
-        datasource.setTestOnBorrow(testOnBorrow);  
-        datasource.setTestOnReturn(testOnReturn);  
-        datasource.setPoolPreparedStatements(poolPreparedStatements);  
+        datasource.setMinIdle(2);                          //配置初始化大小、最小、最大
+        datasource.setMaxActive(10);                       //配置初始化大小、最小、最大
+        datasource.setInitialSize(2);                      //配置初始化大小、最小、最大
+        datasource.setMaxWait(60000);                       //配置获取连接等待超时的时间
+        datasource.setMinEvictableIdleTimeMillis(300000);   //配置一个连接在池中最小生存的时间,单位是毫秒
+        datasource.setTimeBetweenEvictionRunsMillis(60000); //配置间隔多久才进行一次检测,检测需要关闭的空闲连接,单位是毫秒
+        //默认的testWhileIdle=true,testOnBorrow=false,testOnReturn=false
+        datasource.setValidationQuery("SELECT 1");//用来检测连接是否有效的sql
+        datasource.setTestOnBorrow(false);//申请连接时执行validationQuery检测连接是否有效
+        datasource.setTestWhileIdle(true);//建议配置为true，不影响性能，并且保证安全性。
+        datasource.setPoolPreparedStatements(false);//是否缓存preparedStatement，也就是PSCache
         try {  
             datasource.setFilters(filters);  
         } catch (SQLException e) {  
@@ -129,18 +96,18 @@ public class YyyyDataSourceConfig {
         }  
         return datasource;  
     }
-    @Bean(name = "yyyyTransactionManager")
     @Primary
+    @Bean(name = "yyyyTransactionManager")
     public DataSourceTransactionManager yyyyTransactionManager() {
         return new DataSourceTransactionManager(yyyyDataSource());
     }
  
-    @Bean(name = "yyyySqlSessionFactory")
     @Primary
-    public SqlSessionFactory yyyySqlSessionFactory(@Qualifier("yyyyDataSource") DataSource masterDataSource)
+    @Bean(name = "yyyySqlSessionFactory")
+    public SqlSessionFactory yyyySqlSessionFactory(@Qualifier("yyyyDataSource") DataSource dataSource)
             throws Exception {
         final SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
-        sessionFactory.setDataSource(masterDataSource);
+        sessionFactory.setDataSource(dataSource);
         sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
                 .getResources(YyyyDataSourceConfig.MAPPER_LOCATION));
         return sessionFactory.getObject();
